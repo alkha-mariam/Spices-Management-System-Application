@@ -1,0 +1,46 @@
+CREATE DATABASE IF NOT EXISTS spices_db;
+USE spices_db;
+
+USE spices_db;
+CREATE TABLE IF NOT EXISTS spices (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    price DOUBLE NOT NULL,
+    quantity INT NOT NULL
+);
+
+
+
+USE spices_db;
+CREATE TABLE IF NOT EXISTS users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL
+);
+
+
+
+USE spices_db;
+INSERT INTO spices (name, price, quantity) VALUES
+('Turmeric', 50.0, 20),
+('Pepper', 120.0, 15),
+('Cinnamon', 80.0, 10),
+('Cardamom', 200.0, 8);
+
+
+
+USE spices_db;
+INSERT INTO users (username, password) VALUES
+('admin', 'admin123'),
+('alkha', 'alkha123'),
+('sreya', 'sreya123');
+
+USE spices_db;
+SELECT * FROM spices;
+
+
+USE spices_db;
+SELECT * FROM users;
+
+
+
