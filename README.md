@@ -97,11 +97,11 @@ The **Spices Management System** successfully integrates OOP principles with a f
 ![Main Interface](./screenshots/Dashboard.png)
 
 ### Add New Spice Form
-![Add Spice](./screenshots/Add_Spice.png)
+![Add Spice](./screenshots/Add Spice.png)
 
 ### Update Spice Form
-![Update_Spice](./screenshots/Update_Spice.png)
+![Update_Spice](./screenshots/Update Spice.png)
 
 ### Delete Spice Form
-![Delete_Spice](./screenshots/Delete_Spice.png)
+![Delete_Spice](./screenshots/Delete Spice.png)
 
