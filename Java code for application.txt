@@ -1,0 +1,340 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import java.awt.*;
+import java.sql.*;
+
+// ---------- DATABASE CONFIG ----------
+class DBConfig {
+    static final String URL =
+        "jdbc:mysql://localhost:3306/spices_db?useSSL=false&serverTimezone=UTC";
+    static final String USER = "root";        // your MySQL username
+    static final String PASS = "";    // your MySQL password
+}
+
+// ---------- MODEL ----------
+abstract class Product {
+    protected int id;
+    protected String name;
+    protected double price;
+    protected int quantity;
+
+    public Product(int id, String name, double price, int quantity) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public double getPrice() { return price; }
+    public int getQuantity() { return quantity; }
+
+    public void setPrice(double price) { this.price = price; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+
+    public abstract String getCategory();
+}
+
+class Spice extends Product {
+    public Spice(int id, String name, double price, int quantity) {
+        super(id, name, price, quantity);
+    }
+
+    @Override
+    public String getCategory() {
+        return "Spice";
+    }
+}
+
+// ---------- DAO : SPICES ----------
+class SpiceDAO {
+
+   private Connection getConnection() throws SQLException {
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+    } catch (ClassNotFoundException e) {
+        throw new SQLException("Driver not found");
+    }
+    return DriverManager.getConnection(DBConfig.URL, DBConfig.USER, DBConfig.PASS);
+}
+
+
+ public ResultSet getAllSpices() throws SQLException {
+    Connection con = getConnection();
+    Statement st = con.createStatement(
+        ResultSet.TYPE_SCROLL_INSENSITIVE,
+        ResultSet.CONCUR_READ_ONLY
+    );
+    return st.executeQuery("SELECT * FROM spices");
+}
+
+
+    public void addSpice(String name, double price, int qty) throws SQLException {
+        String sql = "INSERT INTO spices(name, price, quantity) VALUES (?, ?, ?)";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setDouble(2, price);
+            ps.setInt(3, qty);
+            ps.executeUpdate();
+        }
+    }
+
+    public void updateSpice(int id, double price, int qty) throws SQLException {
+        String sql = "UPDATE spices SET price=?, quantity=? WHERE id=?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDouble(1, price);
+            ps.setInt(2, qty);
+            ps.setInt(3, id);
+            ps.executeUpdate();
+        }
+    }
+
+    public void deleteSpice(int id) throws SQLException {
+        String sql = "DELETE FROM spices WHERE id=?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
+    }
+}
+
+// ---------- DAO : USERS ----------
+class UserDAO {
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(
+            DBConfig.URL, DBConfig.USER, DBConfig.PASS
+        );
+    }
+
+    public boolean validateUser(String username, String password) {
+        String sql = "SELECT * FROM users WHERE username=? AND password=?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+            ps.setString(2, password);
+
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            return false;
+        }
+    }
+}
+
+// ---------- LOGIN UI ----------
+class LoginFrame extends JFrame {
+
+    private final UserDAO userDAO = new UserDAO();
+
+    public LoginFrame() {
+        setTitle("Login - Spices Management System");
+        setSize(400, 260);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(0, 102, 0));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        JLabel title = new JLabel("SPICES MANAGEMENT SYSTEM");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        title.setForeground(Color.WHITE);
+
+        JLabel uLabel = new JLabel("Username");
+        JLabel pLabel = new JLabel("Password");
+        uLabel.setForeground(Color.WHITE);
+        pLabel.setForeground(Color.WHITE);
+
+        JTextField userField = new JTextField(15);
+        JPasswordField passField = new JPasswordField(15);
+
+        JButton login = new JButton("LOGIN");
+        login.setBackground(Color.WHITE);
+        login.setForeground(new Color(0, 102, 0));
+
+        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
+        panel.add(title, gbc);
+
+        gbc.gridwidth = 1; gbc.gridy = 1;
+        panel.add(uLabel, gbc);
+        gbc.gridx = 1;
+        panel.add(userField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 2;
+        panel.add(pLabel, gbc);
+        gbc.gridx = 1;
+        panel.add(passField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
+        panel.add(login, gbc);
+
+        login.addActionListener(e -> {
+            String username = userField.getText();
+            String password = new String(passField.getPassword());
+
+            if (userDAO.validateUser(username, password)) {
+                new SpicesManagementSystem().setVisible(true);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Invalid Username or Password",
+                    "Login Failed",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
+        });
+
+        add(panel);
+    }
+}
+
+// ---------- MAIN APPLICATION ----------
+public class SpicesManagementSystem extends JFrame {
+
+    private final DefaultTableModel model;
+    private final JTable table;
+    private final JLabel clock = new JLabel();
+    private final SpiceDAO dao = new SpiceDAO();
+
+    public SpicesManagementSystem() {
+        setTitle("Spices Management System");
+        setSize(750, 450);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        model = new DefaultTableModel(
+            new String[]{"ID", "Name", "Price(Rs)", "Quantity(kg)"}, 0
+        );
+        table = new JTable(model);
+        
+        // ---- STYLE TABLE HEADER ----
+JTableHeader header = table.getTableHeader();
+header.setBackground(new Color(0, 102, 0));
+header.setForeground(Color.WHITE);
+header.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+
+        loadData();
+        startClock();
+
+        JButton add = new JButton("Add");
+        JButton update = new JButton("Update");
+        JButton delete = new JButton("Delete");
+
+        Color green = new Color(0, 102, 0);
+        for (JButton b : new JButton[]{add, update, delete}) {
+            b.setBackground(green);
+            b.setForeground(Color.WHITE);
+        }
+
+        add.addActionListener(e -> addSpice());
+        update.addActionListener(e -> updateSpice());
+        delete.addActionListener(e -> deleteSpice());
+
+        JPanel south = new JPanel();
+        south.add(add);
+        south.add(update);
+        south.add(delete);
+        south.add(clock);
+
+        add(new JScrollPane(table), BorderLayout.CENTER);
+        add(south, BorderLayout.SOUTH);
+    }
+
+    private void loadData() {
+        model.setRowCount(0);
+        try (ResultSet rs = dao.getAllSpices()) {
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getDouble("price"),
+                    rs.getInt("quantity")
+                });
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
+
+    private void addSpice() {
+        try {
+            String name = JOptionPane.showInputDialog(this, "Spice Name");
+            double price = Double.parseDouble(
+                JOptionPane.showInputDialog(this, "Price")
+            );
+            int qty = Integer.parseInt(
+                JOptionPane.showInputDialog(this, "Quantity")
+            );
+            dao.addSpice(name, price, qty);
+            loadData();
+            JOptionPane.showMessageDialog(this, "New Spice Added");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Invalid Input");
+        }
+    }
+
+    private void updateSpice() {
+        int row = table.getSelectedRow();
+        if (row == -1) return;
+
+        try {
+            int id = (int) model.getValueAt(row, 0);
+            double price = Double.parseDouble(
+                JOptionPane.showInputDialog(this, "New Price")
+            );
+            int qty = Integer.parseInt(
+                JOptionPane.showInputDialog(this, "New Quantity")
+            );
+            dao.updateSpice(id, price, qty);
+            loadData();
+            JOptionPane.showMessageDialog(this, "Spice Price and Quantity Updated");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Update Failed");
+        }
+    }
+
+    private void deleteSpice() {
+        int row = table.getSelectedRow();
+        if (row == -1) return;
+
+        try {
+            int id = (int) model.getValueAt(row, 0);
+            dao.deleteSpice(id);
+            loadData();
+            JOptionPane.showMessageDialog(this, "Spice deleted successfully");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Delete Failed");
+        }
+    }
+
+    private void startClock() {
+        new Thread(() -> {
+            while (true) {
+             clock.setText(
+    java.time.LocalDateTime.now()
+        .format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"))
+);
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception ignored) {}
+            }
+        }).start();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new LoginFrame().setVisible(true));
+    }
+}
+
