@@ -87,5 +87,21 @@ The **Spices Management System** successfully integrates OOP principles with a f
 
 ---
 
+
 ## 7. Screenshots
-![Main Interface](./screenshots/dashboard.png)
+
+### Login Form 
+![Login_form](./screenshots/Login.png)
+
+### Main Dashboard
+![Main Interface](./screenshots/Dashboard.png)
+
+### Add New Spice Form
+![Add Spice](./screenshots/Add_Spice.png)
+
+### Update Spice Form
+![Update_Spice](./screenshots/Update_Spice.png)
+
+### Delete Spice Form
+![Delete_Spice](./screenshots/Delete_Spice.png)
+
