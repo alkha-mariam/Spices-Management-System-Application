@@ -3,7 +3,7 @@ A Mini Real-World Java Application for Spice Inventory Management, demonstrating
 
 # Spices Management System
 
-**Course:** 244SECUBC201 – Object Oriented Programming Using Java  
+**Course:** 244SECUBC201 – Object Oriented Programming Using Java
 **Course Outcome:** CO5 – Develop and execute Java programs implementing OOP principles, GUI components, exception handling, multithreading, and database connectivity using JDBC.
 
 ---
@@ -63,4 +63,7 @@ CREATE TABLE users (
 );
 
 -- Default Credentials
-INSERT INTO users (username, password) VALUES ('admin', 'admin123');
+INSERT INTO users (username, password) VALUES
+('admin', 'admin123'),
+('alkha', 'alkha123'),
+('sreya', 'sreya123');;
