@@ -42,6 +42,17 @@ This project strictly implements the following Object-Oriented principles:
 
 ---
 
+## 5. Steps to Run the Program
+To verify the output during lab evaluation, follow these steps:
+1. **Clone the Project:** Use `git clone https://github.com/alkha-mariam/Spices-Management-System-Application.git`.
+2. **Open IDE:** Open the folder in **NetBeans** or **IntelliJ IDEA**.
+3. **Set JDK:** Ensure your project is using JDK 8 or higher.
+4. **Run:** Locate the main Java file (e.g., `Main.java`) and click **Run**.
+5. **Database:** If using JDBC, ensure your MySQL/local database is active.
+
+---
+
+
 ## 5. Database Setup (SQL)
 To run this project, create a database named `spices_db` and execute the following scripts:
 
@@ -67,3 +78,14 @@ INSERT INTO users (username, password) VALUES
 ('admin', 'admin123'),
 ('alkha', 'alkha123'),
 ('sreya', 'sreya123');;
+
+```
+---
+
+## 6. Conclusion
+The **Spices Management System** successfully integrates OOP principles with a functional GUI. [cite_start]By implementing exception handling and multithreading, the project meets the **CO5** course outcomes for developing real-world Java applications.
+
+---
+
+## 7. Screenshots
+![Main Interface](./screenshots/dashboard.png)
