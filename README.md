@@ -92,16 +92,16 @@ The **Spices Management System** successfully integrates OOP principles with a f
 Below are the key interfaces of the Spices Management System Application:
 
 ### Login Screen
-![Login Interface](screenshots/Login.png)
+![Login Interface](screenshots/Screenshot/Login.png)
 
 ### Dashboard
-![Main Dashboard](screenshots/Dashboard.png)
+![Main Dashboard](screenshots/Screenshot/Dashboard.png)
 
 ### Add Spice
-![Add New Spice](screenshots/AddSpice.png)
+![Add New Spice](screenshots/Screenshot/Add_Spice.png)
 
 ### Update Spice
-![Update Spice Details](screenshots/UpdateSpice.png)
+![Update Spice Details](screenshots/Screenshot/Update_Spice.png)
 
 ### Delete Spice
-![Delete Spice Entry](screenshots/DeleteSpice.png)
+![Delete Spice Entry](screenshots/Screenshot/Delete_Spice.png)
