@@ -98,10 +98,10 @@ Below are the key interfaces of the Spices Management System Application:
 ![Main Dashboard](screenshots/Screenshot/Dashboard.png)
 
 ### Add Spice
-![Add New Spice](screenshots/Screenshot/AddSpice.png)
+![Add New Spice](screenshots/Screenshot/AddSpice.png.png)
 
 ### Update Spice
-![Update Spice Details](screenshots/Screenshot/UpdateSpice.png)
+![Update Spice Details](screenshots/Screenshot/UpdateSpice.png.png)
 
 ### Delete Spice
-![Delete Spice Entry](screenshots/Screenshot/DeleteSpice.png)
+![Delete Spice Entry](screenshots/Screenshot/DeleteSpice.png.png)
